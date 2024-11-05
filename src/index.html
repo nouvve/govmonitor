@@ -1,12 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRF - GOV | Laws Monitor</title>
-    <link href="./output.css" rel="stylesheet">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Lista Plików</title>
 </head>
-<body class="bg-blue-50">
-    IRF laws Monitor
+<body>
+   <h1>Moje Pliki</h1>
+   <ul id="file-list"></ul>
+
+   <script>
+      async function fetchFiles() {
+         const response = await fetch('https://api.github.com/repos/nouvve/govmonitor/contents/files');
+         const files = await response.json();
+         const list = document.getElementById('file-list');
+
+         files.forEach(file => {
+            if (file.type === "file") {
+               const listItem = document.createElement('li');
+               const link = document.createElement('a');
+               link.href = file.download_url;
+               link.textContent = file.name;
+               listItem.appendChild(link);
+               list.appendChild(listItem);
+            }
+         });
+      }
+
+      fetchFiles();
+   </script>
 </body>
 </html>
