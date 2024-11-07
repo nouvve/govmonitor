@@ -1,34 +1,102 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>IRF monitor</title>
-   <link rel="stylesheet" href="output.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GovMonitor PDF Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #sidebar {
+            width: 250px;
+            background-color: #2d2d2d;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #sidebar h2 {
+            margin-top: 0;
+        }
+        #sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #sidebar ul li {
+            margin-bottom: 10px;
+        }
+        #sidebar ul li a {
+            color: #00bcd4;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #sidebar ul li a:hover {
+            color: #80deea;
+        }
+        #content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
-   <h1>IRF Files</h1>
-   <ul id="file-list"></ul>
+    <div id="sidebar">
+        <h2>Files</h2>
+        <ul id="file-list"></ul>
+    </div>
+    <div id="content">
+        <h1>Select a document to view</h1>
+        <div id="viewer"></div>
+    </div>
 
-   <script>
-      async function fetchFiles() {
-         const response = await fetch('https://api.github.com/repos/nouvve/govmonitor/contents/files');
-         const files = await response.json();
-         const list = document.getElementById('file-list');
+    <script>
+        const repoOwner = "nouvve";
+        const repoName = "govmonitor";
+        const folderPath = "files";
+        
+        // Fetch list of files from GitHub API
+        async function fetchFileList() {
+            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+            try {
+                const response = await fetch(apiUrl);
+                const files = await response.json();
 
-         files.forEach(file => {
-            if (file.type === "file") {
-               const listItem = document.createElement('li');
-               const link = document.createElement('a');
-               link.href = file.download_url;
-               link.textContent = file.name;
-               listItem.appendChild(link);
-               list.appendChild(listItem);
+                if (Array.isArray(files)) {
+                    files.forEach(file => {
+                        if (file.name.endsWith(".html")) {
+                            const listItem = document.createElement("li");
+                            const link = document.createElement("a");
+                            link.textContent = file.name;
+                            link.onclick = () => loadFileContent(file.download_url);
+                            listItem.appendChild(link);
+                            document.getElementById("file-list").appendChild(listItem);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching file list:", error);
             }
-         });
-      }
+        }
 
-      fetchFiles();
-   </script>
+        // Load file content when clicked
+        async function loadFileContent(url) {
+            try {
+                const response = await fetch(url);
+                const content = await response.text();
+                document.getElementById("viewer").innerHTML = content;
+            } catch (error) {
+                console.error("Error loading file content:", error);
+                document.getElementById("viewer").innerHTML = `<p>Error loading document.</p>`;
+            }
+        }
+
+        // Run on page load
+        fetchFileList();
+    </script>
 </body>
 </html>
