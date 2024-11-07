@@ -1,102 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GovMonitor PDF Viewer</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-        #sidebar {
-            width: 250px;
-            background-color: #2d2d2d;
-            color: white;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        #sidebar h2 {
-            margin-top: 0;
-        }
-        #sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        #sidebar ul li {
-            margin-bottom: 10px;
-        }
-        #sidebar ul li a {
-            color: #00bcd4;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        #sidebar ul li a:hover {
-            color: #80deea;
-        }
-        #content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Docs Link Viewer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 25%;
+      background-color: #f4f4f4;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 10px;
+      margin: 5px 0;
+      color: #333;
+      text-decoration: none;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .sidebar a:hover {
+      background-color: #ddd;
+    }
+
+    .content {
+      width: 75%;
+      padding: 20px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-    <div id="sidebar">
-        <h2>Files</h2>
-        <ul id="file-list"></ul>
+  <div class="container">
+    <div class="sidebar" id="linkList">Loading links...</div>
+    <div class="content">
+      <iframe id="docViewer" src="" frameborder="0"></iframe>
     </div>
-    <div id="content">
-        <h1>Select a document to view</h1>
-        <div id="viewer"></div>
-    </div>
+  </div>
 
-    <script>
-        const repoOwner = "nouvve";
-        const repoName = "govmonitor";
-        const folderPath = "files";
+  <script>
+    // Fetch the links and generate sidebar with links that include an ID in the URL
+    fetch('links.json')
+      .then(response => response.json())
+      .then(links => {
+        const linkList = document.getElementById('linkList');
+        linkList.innerHTML = "";  // Clear loading text
         
-        // Fetch list of files from GitHub API
-        async function fetchFileList() {
-            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
-            try {
-                const response = await fetch(apiUrl);
-                const files = await response.json();
-
-                if (Array.isArray(files)) {
-                    files.forEach(file => {
-                        if (file.name.endsWith(".html")) {
-                            const listItem = document.createElement("li");
-                            const link = document.createElement("a");
-                            link.textContent = file.name;
-                            link.onclick = () => loadFileContent(file.download_url);
-                            listItem.appendChild(link);
-                            document.getElementById("file-list").appendChild(listItem);
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error("Error fetching file list:", error);
-            }
-        }
-
-        // Load file content when clicked
-        async function loadFileContent(url) {
-            try {
-                const response = await fetch(url);
-                const content = await response.text();
-                document.getElementById("viewer").innerHTML = content;
-            } catch (error) {
-                console.error("Error loading file content:", error);
-                document.getElementById("viewer").innerHTML = `<p>Error loading document.</p>`;
-            }
-        }
-
-        // Run on page load
-        fetchFileList();
-    </script>
+        links.forEach((link, index) => {
+          const linkElement = document.createElement('a');
+          linkElement.href = `doc.html?id=${index}`;  // Redirect to doc.html with an ID in the URL
+          linkElement.textContent = link.name;
+          linkList.appendChild(linkElement);
+        });
+      })
+      .catch(error => console.error('Error loading links:', error));
+  </script>
 </body>
 </html>

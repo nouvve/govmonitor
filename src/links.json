@@ -1,0 +1,44 @@
+[
+    {
+        "name": "MoSS Reforms",
+        "description": "This documents acts as a guideline for the Ministry of State Security Reforms",
+        "url": "https://docs.google.com/document/d/1t6fpLQae-x1uUjqXNI7rbXHVOysl_mFmJhIIi4yrtaM/preview",
+        "isActive": "Active",
+        "suggestedDate": "2024-09-28",
+        "broughtIntoForceDate": "2024-10-01",
+        "author": "Prime Minister, Nou_devv",
+        "categories": ["Reform", "MoSS"],
+        "amendments": [
+      {
+        "name": "Amendment 1",
+        "url": "https://docs.google.com/document/d/amendment-id-1/view",
+        "description": "This amendment updates section 2.3 of the main document."
+      },
+      {
+        "name": "Amendment 2",
+        "url": "https://docs.google.com/document/d/amendment-id-2/view",
+        "description": "This amendment clarifies definitions in section 4."
+      }
+    ]
+    },
+    {
+        "name": "MoRE rename and titles",
+        "description": "This document changes the name of the Ministry and implements books publishings and titles.",
+        "url": "https://docs.google.com/document/d/1NpGK-T-C04BsC7S17a6UGngmpUGReGTt4NC0qPF8Gf8/preview",
+        "isActive": "Inactive",
+        "suggestedDate": "2023-01-15",
+        "broughtIntoForceDate": "2023-03-01",
+        "author": "John Doe",
+        "categories": ["Project", "Planning"]
+    },
+    {
+        "name": "Administrative and Discipline Units",
+        "description": "This document implements the administrative and discipline units back",
+        "url": "https://docs.google.com/document/d/1gM6Z3g0WasCLfAQvyudu3jLHU5hfc1QFBOYN1YWpSGQ/preview",
+        "isActive": "Being Processed",
+        "suggestedDate": "2023-01-15",
+        "broughtIntoForceDate": "2023-03-01",
+        "author": "John Doe",
+        "categories": ["Project", "Planning"]
+    }
+]

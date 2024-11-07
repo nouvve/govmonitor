@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Viewer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    /* Go Back Button */
+    .go-back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1em;
+    }
+
+    .go-back-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+    }
+
+    .description {
+      font-size: 1.1em;
+      color: #555;
+      margin-top: 15px;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 1.1em;
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+      width: 100%;
+      text-align: center;
+    }
+
+    .doc-info {
+      margin-top: 20px;
+      width: 100%;
+      padding: 15px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .doc-meta {
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: #333;
+    }
+
+    .doc-meta p {
+      margin-bottom: 8px;
+    }
+
+    .categories {
+      font-weight: bold;
+    }
+
+    /* Amendments Table */
+    .amendments-table-container {
+      width: 100%;
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    td a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    td a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <button class="go-back-btn" onclick="window.location.href='index.html'">Go Back to Main Page</button>
+
+  <div class="content">
+    <iframe id="docViewer" src="" frameborder="0"></iframe>
+
+    <div class="doc-info">
+      <h1 id="docName">Loading document...</h1>
+      <p id="docDescription" class="description"></p>
+      <p id="docStatus" class="status"></p>
+
+      <div class="doc-meta">
+        <p><strong>Suggested on:</strong> <span id="suggestedDate">Loading...</span></p>
+        <p><strong>Brought into force on:</strong> <span id="broughtIntoForceDate">Loading...</span></p>
+        <p><strong>Written by:</strong> <span id="author">Loading...</span></p>
+        <p><strong>Categories:</strong> <span id="categories">Loading...</span></p>
+      </div>
+    </div>
+
+    <!-- Amendments Section -->
+    <div class="amendments-table-container">
+      <h2>Amendments</h2>
+      <table id="amendmentsTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Amendment rows will be added here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const docId = urlParams.get('id');
+
+    fetch('links.json')
+      .then(response => response.json())
+      .then(links => {
+        const link = links[docId];
+
+        if (link) {
+          document.getElementById('docName').textContent = link.name;
+          document.getElementById('docViewer').src = link.url;
+          document.getElementById('docDescription').textContent = link.description;
+
+          const statusElement = document.getElementById('docStatus');
+          const status = link.isActive;
+          statusElement.textContent = status === "Active" ? "In use" : status === "Inactive" ? "No longer in use" : "Being processed";
+          statusElement.style.backgroundColor = status === "Active" ? "green" : status === "Inactive" ? "red" : "orange";
+
+          document.getElementById('suggestedDate').textContent = link.suggestedDate;
+          document.getElementById('broughtIntoForceDate').textContent = link.broughtIntoForceDate;
+          document.getElementById('author').textContent = link.author;
+          document.getElementById('categories').textContent = link.categories.join(', ');
+
+          // Populate Amendments Table
+          const amendmentsTableBody = document.getElementById('amendmentsTable').querySelector('tbody');
+          amendmentsTableBody.innerHTML = '';
+
+          link.amendments.forEach(amendment => {
+            const row = document.createElement('tr');
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = amendment.name;
+            row.appendChild(nameCell);
+
+            const descCell = document.createElement('td');
+            descCell.textContent = amendment.description;
+            row.appendChild(descCell);
+
+            const linkCell = document.createElement('td');
+            const linkAnchor = document.createElement('a');
+            linkAnchor.href = amendment.url;
+            linkAnchor.target = "_blank";
+            linkAnchor.textContent = "View Amendment";
+            linkCell.appendChild(linkAnchor);
+            row.appendChild(linkCell);
+
+            amendmentsTableBody.appendChild(row);
+          });
+        } else {
+          document.getElementById('docName').textContent = "Document not found";
+        }
+      })
+      .catch(error => console.error('Error loading document:', error));
+  </script>
+</body>
+</html>
