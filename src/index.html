@@ -27,18 +27,54 @@
       overflow-y: auto;
     }
 
-    .sidebar a {
-      display: block;
+    .link-item {
+      margin-bottom: 15px;
       padding: 10px;
-      margin: 5px 0;
-      color: #333;
-      text-decoration: none;
       border: 1px solid #ddd;
       border-radius: 4px;
+      background-color: #fff;
+      color: #333;
+      text-decoration: none;
+      display: block;
+      transition: background-color 0.3s;
     }
 
-    .sidebar a:hover {
+    .link-item:hover {
       background-color: #ddd;
+    }
+
+    .title-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .active { background-color: #28a745; }      /* Green dot for Active */
+    .processing { background-color: #ffc107; }  /* Yellow dot for Being Processed */
+    .inactive { background-color: #dc3545; }    /* Red dot for Inactive */
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .tag {
+      background-color: #007bff;
+      color: white;
+      font-size: 0.8em;
+      padding: 3px 8px;
+      border-radius: 12px;
+      display: inline-block;
     }
 
     .content {
@@ -67,12 +103,52 @@
       .then(links => {
         const linkList = document.getElementById('linkList');
         linkList.innerHTML = "";  // Clear loading text
-        
+
         links.forEach((link, index) => {
-          const linkElement = document.createElement('a');
-          linkElement.href = `doc.html?id=${index}`;  // Redirect to doc.html with an ID in the URL
-          linkElement.textContent = link.name;
-          linkList.appendChild(linkElement);
+          // Create a link container
+          const linkContainer = document.createElement('a');
+          linkContainer.href = `doc.html?id=${index}`;
+          linkContainer.classList.add('link-item');
+
+          // Create a container for the title and status dot
+          const titleContainer = document.createElement('div');
+          titleContainer.classList.add('title-container');
+
+          // Create the status dot
+          const statusDot = document.createElement('span');
+          statusDot.classList.add('status-dot');
+          if (link.isActive === "Active") {
+            statusDot.classList.add('active');
+          } else if (link.isActive === "Being Processed") {
+            statusDot.classList.add('processing');
+          } else {
+            statusDot.classList.add('inactive');
+          }
+
+          // Create the title element
+          const titleElement = document.createElement('div');
+          titleElement.textContent = link.name;
+
+          // Append the status dot and title to the title container
+          titleContainer.appendChild(statusDot);
+          titleContainer.appendChild(titleElement);
+
+          // Create the tags container and add tags
+          const tagsContainer = document.createElement('div');
+          tagsContainer.classList.add('tags');
+          link.categories.forEach(category => {
+            const tag = document.createElement('span');
+            tag.classList.add('tag');
+            tag.textContent = category;
+            tagsContainer.appendChild(tag);
+          });
+
+          // Append title and tags to the link container
+          linkContainer.appendChild(titleContainer);
+          linkContainer.appendChild(tagsContainer);
+
+          // Append the link container to the sidebar
+          linkList.appendChild(linkContainer);
         });
       })
       .catch(error => console.error('Error loading links:', error));
