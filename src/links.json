@@ -1,6 +1,6 @@
 [
     {
-        "name": "MoSS Reforms",
+        "name": "The letter to the Minister of State Security #1",
         "description": "This documents acts as a guideline for the Ministry of State Security Reforms",
         "url": "https://docs.google.com/document/d/1t6fpLQae-x1uUjqXNI7rbXHVOysl_mFmJhIIi4yrtaM/preview",
         "isActive": "Active",
@@ -12,9 +12,9 @@
         "categories": ["Reform", "MoSS"],
         "amendments": [
       {
-        "name": "Amendment 1",
+        "name": "11/11/2024",
         "url": "https://docs.google.com/document/d/amendment-id-1/view",
-        "description": "This amendment updates section 2.3 of the main document."
+        "description": "On the formal request of the Minister of the State Security the document details 3 new offices"
       },
       {
         "name": "Amendment 2",
