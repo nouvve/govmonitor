@@ -21,7 +21,6 @@
       background-color: #f4f4f4;
     }
 
-    /* Go Back Button */
     .go-back-btn {
       position: absolute;
       top: 20px;
@@ -92,7 +91,26 @@
       font-weight: bold;
     }
 
-    /* Amendments Table */
+    .doc-buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .doc-btn {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .doc-btn:hover {
+      background-color: #0056b3;
+    }
+
     .amendments-table-container {
       width: 100%;
       margin-top: 20px;
@@ -137,6 +155,13 @@
 
     <div class="doc-info">
       <h1 id="docName">Loading document...</h1>
+
+      <!-- New buttons for Google Docs and PDF download -->
+      <div class="doc-buttons">
+        <button id="openGoogleDocsBtn" class="doc-btn" style="display: none;">Open in Google Docs</button>
+        <button id="downloadPdfBtn" class="doc-btn" style="display: none;">Download PDF</button>
+      </div>
+
       <p id="docDescription" class="description"></p>
       <p id="docStatus" class="status"></p>
 
@@ -148,7 +173,6 @@
       </div>
     </div>
 
-    <!-- Amendments Section -->
     <div class="amendments-table-container">
       <h2>Amendments</h2>
       <table id="amendmentsTable">
@@ -190,31 +214,49 @@
           document.getElementById('author').textContent = link.author;
           document.getElementById('categories').textContent = link.categories.join(', ');
 
-          // Populate Amendments Table
+          // Show Google Docs button if link is available
+          if (link.documenturl) {
+            const openGoogleDocsBtn = document.getElementById('openGoogleDocsBtn');
+            openGoogleDocsBtn.style.display = 'inline-block';
+            openGoogleDocsBtn.onclick = () => window.open(link.documenturl, '_blank');
+          }
+
+          // Show PDF Download button if link is available
+          if (link.pdf) {
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            downloadPdfBtn.style.display = 'inline-block';
+            downloadPdfBtn.onclick = () => window.open(link.pdf, '_blank');
+          }
+
+          // Check if there are amendments
+          const amendmentsTableContainer = document.querySelector('.amendments-table-container');
           const amendmentsTableBody = document.getElementById('amendmentsTable').querySelector('tbody');
-          amendmentsTableBody.innerHTML = '';
 
-          link.amendments.forEach(amendment => {
-            const row = document.createElement('tr');
+          if (link.amendments && link.amendments.length > 0) {
+            link.amendments.forEach(amendment => {
+              const row = document.createElement('tr');
 
-            const nameCell = document.createElement('td');
-            nameCell.textContent = amendment.name;
-            row.appendChild(nameCell);
+              const nameCell = document.createElement('td');
+              nameCell.textContent = amendment.name;
+              row.appendChild(nameCell);
 
-            const descCell = document.createElement('td');
-            descCell.textContent = amendment.description;
-            row.appendChild(descCell);
+              const descCell = document.createElement('td');
+              descCell.textContent = amendment.description;
+              row.appendChild(descCell);
 
-            const linkCell = document.createElement('td');
-            const linkAnchor = document.createElement('a');
-            linkAnchor.href = amendment.url;
-            linkAnchor.target = "_blank";
-            linkAnchor.textContent = "View Amendment";
-            linkCell.appendChild(linkAnchor);
-            row.appendChild(linkCell);
+              const linkCell = document.createElement('td');
+              const linkAnchor = document.createElement('a');
+              linkAnchor.href = amendment.url;
+              linkAnchor.target = "_blank";
+              linkAnchor.textContent = "View Amendment";
+              linkCell.appendChild(linkAnchor);
+              row.appendChild(linkCell);
 
-            amendmentsTableBody.appendChild(row);
-          });
+              amendmentsTableBody.appendChild(row);
+            });
+          } else {
+            amendmentsTableContainer.style.display = 'none';
+          }
         } else {
           document.getElementById('docName').textContent = "Document not found";
         }
